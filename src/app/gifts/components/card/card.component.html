@@ -1,0 +1,14 @@
+<!--"card" define la estructura de una tarjeta de Bootstrap.
+      "mb-2" separa con margen de 2 unidades el contenido que la rodea.
+      "text-center" centra el contenido dentro de la tarjeta en horizontal.
+      "bg-dark" cambia el fondo de la tarjeta a un color oscuro -->
+<div class="card mb-2 text-center bg-dark">
+  <img
+    [src]="gif.images.downsized_medium.url"
+    [alt]="gif.title"
+    class="card-img-top"
+  />
+  <div class="card-body text-white">
+    <p class="card-text">{{ gif.title }}</p>
+  </div>
+</div>
