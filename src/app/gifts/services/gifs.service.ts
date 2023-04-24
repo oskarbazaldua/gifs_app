@@ -17,7 +17,9 @@ export class GifsService {
   private serviceUrl: string = 'https://api.giphy.com/v1/gifs';
 
 
-  constructor( private http: HttpClient) { }
+  constructor( private http: HttpClient) {
+    this.loadLocalStoreag();
+  }
 
   /*"get tagHistory()" obtiene una copia de la matriz "_tagHistory".
   //Devuelve una copia de la matriz en lugar de la matriz original
@@ -27,7 +29,7 @@ export class GifsService {
   }
 
   private organizeHistory (tag: string) {
-    //agrega el tag con la 1era mayúscula
+    //agrega el tag con la primer letra mayúscula
     tag = tag.toLocaleLowerCase();
 
     //sí el arreglo de tag incluye el tag que poner el usuario
@@ -39,7 +41,7 @@ export class GifsService {
       this._tagHistory = this._tagHistory.filter((oldTag) => oldTag != tag )
     }
 
-    /*insera el nuevo tag al inicio del arreglo
+    /*inserta el nuevo tag al inicio del arreglo
     y regresa el nuevo arreglo*/
     this._tagHistory.unshift( tag );
 
@@ -47,9 +49,29 @@ export class GifsService {
     o eliminar elementos existentes en ella.
     splice devuelve los elementos eliminados como una nueva matriz.*/
     this._tagHistory = this._tagHistory.splice(0,10);
+    /*Se manda llamada al método saveLocalStoreage que guardará las
+    busquedas en el ocalStorage del navegador */
+    this.saveLocalStorage();
 
   }
 
+  private saveLocalStorage (): void {
+    localStorage.setItem('history', JSON.stringify(this._tagHistory));
+  }
+
+  /* Método para agregar los valores buscados en el storage
+  y usarlos para hacerlos pesistentes, aunque el usuario recargue
+  la página del nabegador */
+  private loadLocalStoreag (): void {
+    if (!localStorage.getItem ('history') ) return;
+
+    this._tagHistory = JSON.parse( localStorage.getItem('history')! );
+
+    if ( this._tagHistory.length === 0 ) return;
+    this.searchTag( this._tagHistory[0] );
+  }
+
+  //Busqueda de Gifs
   searchTag (tag: string):void {
     if (tag.length === 0) return;
 
@@ -63,7 +85,6 @@ export class GifsService {
     this.http.get<SearchResponse>(`${ this.serviceUrl }/search`, {params})
       .subscribe ( resp => {
         this.gifList = resp.data;
-        console.log({gif: this.gifList})
       });
 
 
