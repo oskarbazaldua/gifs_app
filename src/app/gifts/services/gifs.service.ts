@@ -1,10 +1,14 @@
 
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Gif, SearchResponse } from '../interfaces/gifs.interfaces';
 
 @Injectable({providedIn: 'root'})
 export class GifsService {
 
+
+  public gifList: Gif[] = []
+;
   /*atributo privado "_tagHistory" que es una matriz de cadenas
   almacenar el historial de etiquetas de búsqueda que ha utilizado
   el usuario para buscar gifs.*/
@@ -56,9 +60,10 @@ export class GifsService {
       .set('limit','15')
       .set('q',tag)
 
-    this.http.get(`${ this.serviceUrl }/search`, {params})
+    this.http.get<SearchResponse>(`${ this.serviceUrl }/search`, {params})
       .subscribe ( resp => {
-        console.log(resp);
+        this.gifList = resp.data;
+        console.log({gif: this.gifList})
       });
 
 
